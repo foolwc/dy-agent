@@ -1,0 +1,106 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.hust.foolwc</groupId>
+    <artifactId>dy-agent-log4j</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>dy-agent-log4j-api</module>
+        <module>dy-agent-log4j-core</module>
+    </modules>
+    <packaging>pom</packaging>
+
+    <name>dy-agent-log4j</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <disruptorVersion>3.3.6</disruptorVersion>
+        <conversantDisruptorVersion>1.2.10</conversantDisruptorVersion>
+        <jctoolsVersion>1.2.1</jctoolsVersion>
+        <jackson2Version>2.9.1</jackson2Version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.hust.foolwc</groupId>
+                <artifactId>dy-agent-log4j-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <!-- Used for compressing to formats other than zip and gz -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>1.14</version>
+                <optional>true</optional>
+            </dependency>
+            <dependency>
+                <groupId>com.lmax</groupId>
+                <artifactId>disruptor</artifactId>
+                <version>${disruptorVersion}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.conversantmedia</groupId>
+                <artifactId>disruptor</artifactId>
+                <classifier>jdk7</classifier>
+                <version>${conversantDisruptorVersion}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jctools</groupId>
+                <artifactId>jctools-core</artifactId>
+                <version>${jctoolsVersion}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson2Version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson2Version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+                <executions>
+                    <execution>
+                        <!-- disable annotation processing for first pass -->
+                        <id>default-compile</id>
+                        <configuration>
+                            <excludes>
+                                <exclude>module-info.java</exclude>
+                            </excludes>
+                            <proc>none</proc>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <!-- then do a processing-only pass to generate plugins .dat file -->
+                        <id>process-plugins</id>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <phase>process-classes</phase>
+                        <configuration>
+                            <excludes>
+                                <exclude>module-info.java</exclude>
+                            </excludes>
+                            <proc>only</proc>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

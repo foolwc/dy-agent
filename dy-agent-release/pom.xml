@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>dy-agent</artifactId>
+        <groupId>com.hust.foolwc</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.hust.foolwc</groupId>
+    <artifactId>dy-agent-release</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <name>dy-agent-release</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.hust.foolwc</groupId>
+            <artifactId>dy-agent-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>${project.artifactId}-${project.parent.version}</finalName>
+                            <transformers>
+                                <transformer
+                                    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Premain-Class>com.hust.foolwc.dy.agent.core.AgentLauncher</Premain-Class>
+                                        <Can-Retransform-Classes>true</Can-Retransform-Classes>
+                                        <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                            <relocations>
+                                <relocation>
+                                    <pattern>com.</pattern>
+                                    <shadedPattern>third.com.</shadedPattern>
+                                    <excludes>
+                                        <exclude>com.hust.**</exclude>
+                                        <exclude>com.uber.**</exclude>
+                                        <exclude>com.twitter.zipkin.**</exclude>
+
+                                        <!--exclude oepntracing plugin-->
+                                        <exclude>com.alibaba.dubbo.**</exclude>
+                                        <exclude>com.mysql.**</exclude>
+                                        <exclude>org.apache.commons.pool2..**</exclude>
+                                    </excludes>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.</pattern>
+                                    <shadedPattern>third.org.</shadedPattern>
+                                    <excludes>
+                                        <exclude>org.xml.sax.**</exclude>
+                                        <exclude>org.w3c.dom.**</exclude>
+                                        <exclude>org.slf4j.**</exclude>
+                                        <exclude>org.apache.logging.**</exclude>
+
+                                        <!--exclude opentracing plugin-->
+                                        <exclude>org.apache.http.**</exclude>
+                                        <exclude>org.apache.hadoop.**</exclude>
+                                        <exclude>org.springframework.**</exclude>
+                                        <exclude>org.apache.catalina.**</exclude>
+                                        <exclude>org.apache.coyote.**</exclude>
+                                        <exclude>org.nutz.**</exclude>
+                                    </excludes>
+                                </relocation>
+                                <relocation>
+                                    <pattern>net.</pattern>
+                                    <shadedPattern>third.net.</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>javassist.</pattern>
+                                    <shadedPattern>third.javassist.</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>io.</pattern>
+                                    <shadedPattern>third.io.</shadedPattern>
+                                    <excludes>
+                                        <exclude>io.grpc.**</exclude>
+                                        <exclude>io.opentracing.**</exclude>
+                                    </excludes>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

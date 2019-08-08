@@ -1,0 +1,59 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache license, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the license for the specific language governing permissions and
+ * limitations under the license.
+ */
+package com.hust.foolwc.dy.agent.log4j.core.message;
+
+import com.hust.foolwc.dy.agent.log4j.message.ThreadDumpMessage;
+import com.hust.foolwc.dy.agent.log4j.message.ThreadInformation;
+
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+
+
+/**
+ * Factory to create extended thread information.
+ */
+public class ExtendedThreadInfoFactory implements ThreadDumpMessage.ThreadInfoFactory {
+    public ExtendedThreadInfoFactory() {
+        final Method[] methods = ThreadInfo.class.getMethods();
+        boolean basic = true;
+        for (final Method method : methods) {
+            if (method.getName().equals("getLockInfo")) {
+                basic = false;
+                break;
+            }
+        }
+        if (basic) {
+            throw new IllegalStateException();
+        }
+    }
+    @Override
+    public Map<ThreadInformation, StackTraceElement[]> createThreadInfo() {
+        final ThreadMXBean bean = ManagementFactory.getThreadMXBean();
+        final ThreadInfo[] array = bean.dumpAllThreads(true, true);
+
+        final Map<ThreadInformation, StackTraceElement[]>  threads =
+            new HashMap<>(array.length);
+        for (final ThreadInfo info : array) {
+            threads.put(new ExtendedThreadInformation(info), info.getStackTrace());
+        }
+        return threads;
+    }
+}

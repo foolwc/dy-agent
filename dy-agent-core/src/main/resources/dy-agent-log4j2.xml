@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="OFF" shutdownHook="disable">
+    <properties>
+        <!--<property name="serviceName">${sys:ocean.service.name}</property>-->
+        <!--<property name="logDir">${sys:ocean.log.dir}</property>-->
+        <property name="serviceName">DyAgentFile</property>
+        <property name="logDir">/DyAgentFile</property>
+    </properties>
+
+    <appenders>
+        <RollingFile name="DyAgentFile"
+            fileName="${logDir}/DyAgentFile/${serviceName}.skyeye.log"
+            filePattern="${logDir}/DyAgentFile/%d{yyyy-MM-dd}-%i.skyeye.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} | %-5level | %t | %class{36}.%M()_%L: %msg%xEx%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="30 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="5">
+                <Delete basePath="${logDir}/skyeye"
+                    maxDepth="1">
+                    <IfFileName glob="*.log"/>
+                    <IfLastModified age="7d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+            </appenders>
+    <loggers>
+        <logger name="com.hust.foolwc" additivity="false" level="INFO">
+            <appender-ref ref="DyAgentFile"/>
+        </logger>
+    </loggers>
+</configuration>
