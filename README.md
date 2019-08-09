@@ -1,6 +1,7 @@
 # dy-agent
 + 基于Bytebuddy字节码增强技术及Java Agent实现的无侵入式AOP框架
-+ 借鉴skywalking的设计原理开发
++ 借鉴skywalking的设计原理开发，只保留最基本的match功能
++ 代码简单，容易直接上手二次开发
 ## 如何使用
 + 继承AbstractMethodInterceptor类，需要override两个方法: **focusOn** 以及 **match**
 ### focusOn
