@@ -1,26 +1,26 @@
 package com.hust.foolwc.dy.agent.core;
 
+import com.hust.foolwc.dy.agent.core.enhance.AbstractMethodInterceptor;
 import com.hust.foolwc.dy.agent.core.enhance.BuilderDecorator;
 import com.hust.foolwc.dy.agent.core.enhance.Interceptor;
 import com.hust.foolwc.dy.agent.core.enhance.TypeMatcher;
-import com.hust.foolwc.dy.agent.core.itrcpt.DemoInterceptor;
 import com.hust.foolwc.dy.agent.log4j.LogManager;
 import com.hust.foolwc.dy.agent.log4j.Logger;
 
 import java.lang.instrument.Instrumentation;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.agent.builder.AgentBuilder.Default;
-import net.bytebuddy.agent.builder.AgentBuilder.Transformer;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
-import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.dynamic.scaffold.MethodGraph.Compiler.ForDeclaredMethods;
 import net.bytebuddy.utility.JavaModule;
+import org.reflections.Reflections;
 
 /**
  * @Author: foolwc
@@ -37,7 +37,19 @@ public class AgentLauncher {
     }
 
     private static void decorateInst(Instrumentation inst) {
-        List<Interceptor> itrcpts = Arrays.asList(new DemoInterceptor());
+        String prefix = AgentLauncher.class.getPackage().getName();
+        Reflections reflections = new Reflections(prefix);
+        Set<Class<? extends AbstractMethodInterceptor>> itcptSet = reflections
+                .getSubTypesOf(AbstractMethodInterceptor.class);
+        List<Interceptor> itrcpts = new ArrayList<>();
+        for (Class<? extends AbstractMethodInterceptor> itcpt : itcptSet) {
+            try {
+                LOG.info("initializing intercepter {}.", itcpt.getName());
+                itrcpts.add(itcpt.newInstance());
+            } catch (Exception e) {
+                LOG.error("initialize {} failed!", itcpt.getName(), e);
+            }
+        }
 
         InterceptorChainFactoryUtils.INTERCEPTORS = Collections.unmodifiableList(itrcpts);
         InterceptorChainFactoryUtils.METHOD.addInterceptors(itrcpts);
@@ -46,13 +58,9 @@ public class AgentLauncher {
         new Default()
                 .ignore(TypeMatcher.INSTANCE.ignoreRule())
                 .type(TypeMatcher.INSTANCE.passRule(itrcpts))
-                .transform(new Transformer() {
-                    public Builder<?> transform(Builder<?> builder, TypeDescription typeDescription,
-                            ClassLoader classLoader,
-                            JavaModule module) {
-                        //decorate builder.
-                        return BuilderDecorator.INSTANCE.decorate(builder, typeDescription, classLoader, module);
-                    }
+                .transform((builder, typeDescription, classLoader, module) -> {
+                    //decorate builder.
+                    return BuilderDecorator.INSTANCE.decorate(builder, typeDescription, classLoader, module);
                 })
                 .with(new ByteBuddy().with(ForDeclaredMethods.INSTANCE))
                 .with(new DefaultAgentListener())

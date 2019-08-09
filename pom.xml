@@ -21,6 +21,7 @@
         <bytebuddy.version>1.8.15</bytebuddy.version>
         <reflections.version>0.9.11</reflections.version>
         <dy-agent-log4j.version>1.0-SNAPSHOT</dy-agent-log4j.version>
+        <reflections.version>0.9.11</reflections.version>
     </properties>
 
     <dependencyManagement>
@@ -52,7 +53,11 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>1.7.25</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.reflections</groupId>
+                <artifactId>reflections</artifactId>
+                <version>${reflections.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
