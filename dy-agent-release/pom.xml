@@ -70,28 +70,6 @@
                                     </excludes>
                                 </relocation>
                                 <relocation>
-                                    <pattern>org.</pattern>
-                                    <shadedPattern>third.org.</shadedPattern>
-                                    <excludes>
-                                        <exclude>org.xml.sax.**</exclude>
-                                        <exclude>org.w3c.dom.**</exclude>
-                                        <exclude>org.slf4j.**</exclude>
-                                        <exclude>org.apache.logging.**</exclude>
-
-                                        <!--exclude opentracing plugin-->
-                                        <exclude>org.apache.http.**</exclude>
-                                        <exclude>org.apache.hadoop.**</exclude>
-                                        <exclude>org.springframework.**</exclude>
-                                        <exclude>org.apache.catalina.**</exclude>
-                                        <exclude>org.apache.coyote.**</exclude>
-                                        <exclude>org.nutz.**</exclude>
-                                    </excludes>
-                                </relocation>
-                                <relocation>
-                                    <pattern>net.</pattern>
-                                    <shadedPattern>third.net.</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>javassist.</pattern>
                                     <shadedPattern>third.javassist.</shadedPattern>
                                 </relocation>
