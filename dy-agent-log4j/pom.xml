@@ -18,7 +18,7 @@
         <disruptorVersion>3.3.6</disruptorVersion>
         <conversantDisruptorVersion>1.2.10</conversantDisruptorVersion>
         <jctoolsVersion>1.2.1</jctoolsVersion>
-        <jackson2Version>2.12.1</jackson2Version>
+        <jackson2Version>2.12.7.1</jackson2Version>
     </properties>
 
     <dependencyManagement>
